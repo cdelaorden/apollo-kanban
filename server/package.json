@@ -7,5 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "cdelaorden@gmail.com",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^0.3.2",
+    "graphql": "^0.7.1",
+    "knex": "^0.12.2",
+    "mysql": "^2.11.1"
+  }
 }
