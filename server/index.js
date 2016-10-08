@@ -1,21 +1,32 @@
 var kontainer = require('./config/containerConfig');
+var { mockServer } = require('graphql-tools');
+var schema = require('./schema/types');
 
 
-var userService = kontainer.get('userService');
+kontainer.get('gqlserver');
+kontainer.start('webserver');
 
-//create dummy admin:admin account if one does not exists
-userService.getByUsername('admin')
-.then(user => {
-  if(!user){
-    return userService.create({
-      username: 'admin',
-      password: 'admin',
-      createdAt: new Date(),
-      active: true
-    })
-  }
-  return user
-})
-.then(u => {
-  console.log('Use admin user to login!');
-})
+
+/** Call this function on this file to create an admin:admin user for testing */
+function createAdminAccountIfNeeded(){
+  var userService = kontainer.get('userService');
+  //create dummy admin:admin account if one does not exists
+  userService.getByUsername('admin')
+  .then(user => {
+    if(!user){
+      return userService.create({
+        username: 'admin',
+        password: 'admin',
+        createdAt: new Date(),
+        active: true
+      }).then(u => u);
+    }
+    return user
+  })
+  .then(u => {
+    console.log('Use admin/admin user to login!', u);
+  })
+  .catch(err => {
+    console.log('Error', err);
+  });
+}

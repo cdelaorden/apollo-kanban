@@ -16,7 +16,7 @@ function JWTServiceFactory(config){
   /**
    * creates a JWT given a user
    * @param  {Object} user        User data that will be encoded as the JWT payload
-   * @param  {Array}  userfields  Array of user properties to encode
+   * @param  {Array<String>}  userfields  Array of user properties to encode
    * @return {Promise}            Promise that resolves with the token
    */
   function createToken(user, userfields){
@@ -32,7 +32,7 @@ function JWTServiceFactory(config){
   /**
    * verifies a provided JWT
    * @param  {String} token JSON    Web Token to validate
-   * @param  {Array}  userfields    Array of user properties to decode
+   * @param  {Array<String>}  userfields    Array of user properties to decode
    * @return {Promise}              Promise that resolves with the decoded user fields
    */
   function verifyToken(token, userfields){

@@ -1,7 +1,7 @@
 module.exports = `
   type User {
     id: Int! # ! means is mandatory
-    name: String!
+    username: String!
     createdAt: Int
   }
 
@@ -16,13 +16,14 @@ module.exports = `
     id: Int!
     title: String
     description: String
+    displayOrder: Int
     author: User
     comments: [Comment]
   }
 
   type Lane {
     id: Int!
-    name: String!
+    title: String!
     displayOrder: Int!
     cards: [Card]
   }
@@ -34,5 +35,15 @@ module.exports = `
     owner: User
     lanes: [Lane]
     members: [User]
+  }
+
+  type Query {
+    boards: [Board]
+    board(id: Int!): Board
+    me: User
+  }
+
+  schema {
+    query: Query
   }
 `;

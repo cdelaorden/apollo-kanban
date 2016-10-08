@@ -1,13 +1,13 @@
-var brcypt = require('bcryptjs');
+var bcrypt = require('bcryptjs');
 
 function UserServiceFactory(db){
+
   function encryptPassword(pwd){
     return new Promise((res, rej) => {
       bcrypt.genSalt(10, (err, salt) => {
         if(err) return rej(err);
         bcrypt.hash(pwd, salt, (err, hash) => {
-          if(err) return rej(err);
-          return hash;
+          return err ? rej(err) : res(hash);
         })
       })
     });
@@ -22,16 +22,33 @@ function UserServiceFactory(db){
   }
 
   function getById(id){
-    return db('User').where({ id }).first();
+    return db('User')
+      .select('id', 'username')
+      .where({ id }).first();
+  }
+
+  function getManyById(ids = []){
+    return db('User')
+      .select('id','username')
+      .whereIn('id', ids)
   }
 
   function getByUsername(username){
-    return db('User').where({ username }).first();
+    return db('User')
+      .select('id', 'username', 'password', 'createdAt')
+      .where({ username }).first();
   }
 
-  function create(user){
-    return checkUsername(user.username)
-    .then(_ => encryptPassword(user.password))
+  function getMembersForBoard(boardId){
+    return db('User')
+      .select('id', 'username')
+      .innerJoin('BoardMember', 'BoardMember.userId', 'User.id')
+      .where('BoardMember.boardId', boardId);
+  }
+
+  function create(newUser){
+    return checkUsername(newUser.username)
+    .then(ok => encryptPassword(newUser.password))
     .then(hash => {
       newUser.password = hash;
       return db('User').insert(newUser).return(newUser);
@@ -52,7 +69,8 @@ function UserServiceFactory(db){
   }
 
   function checkUsername(username){
-    return getByUsername(username).then(u => {
+    return getByUsername(username)
+    .then(user => {
       if(user){
         throw new Error('Username already in use');
       }
@@ -62,7 +80,9 @@ function UserServiceFactory(db){
 
   return {
     getById,
+    getManyById,
     getByUsername,
+    getMembersForBoard,
     login,
     create,
     checkUsername
