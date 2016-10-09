@@ -1,13 +1,16 @@
 var kontainer = require('./config/containerConfig');
-var { mockServer } = require('graphql-tools');
-var schema = require('./schema/types');
+//for mocking you schema until you have a real DB
+//var { mockServer } = require('graphql-tools');
 
 
+//that's all, launch an express graphql server
 kontainer.get('gqlserver');
 kontainer.start('webserver');
 
-
-/** Call this function on this file to create an admin:admin user for testing */
+/**
+ * FOR DEVELOPMENT PURPOSES...
+ * Call this function on this file to create an admin:admin user for testing
+ */
 function createAdminAccountIfNeeded(){
   var userService = kontainer.get('userService');
   //create dummy admin:admin account if one does not exists

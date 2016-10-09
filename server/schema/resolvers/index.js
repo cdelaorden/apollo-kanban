@@ -1,38 +1,17 @@
-var userResolver = require('./user');
+var Date = require('./date'),
+    common = require('./common')
+    board = require('./board'),
+    boardMember = require('./board_member'),
+    lane = require('./lane'),
+    card = require('./card');
+
 var { Kind } = require('graphql/language')
 
 function ResolverFactory(boardService, laneService, cardService, commentService, userService){
 
-  //Common stuff for relations
-
-  /** Returns a User object from an entity authorId */
-  function author(parent, args, { loaders }){
-    return loaders.users.load(parent.authorId);
-  }
-
-  /** Returns a User object from an entity's lastEditedById */
-  function lastEditor(parent, args, { loaders }){
-    return parent.lastEditorId ?
-      loaders.users.load(parent.lastEditorId) :
-      null;
-  }
-
   return {
     //Custom scalar type
-    Date: {
-      __parseValue(value) {
-        return new Date(value); // value from the client
-      },
-      __serialize(value) {
-        return value.getTime(); // value sent to the client
-      },
-      __parseLiteral(ast) {
-        if (ast.kind === Kind.INT) {
-          return parseInt(ast.value, 10); // ast value is always in string format
-        }
-        return null;
-      },
-    },
+    Date,
     //the schema itself
     Query: {
       boards (_, args, { user, loaders }){
@@ -54,51 +33,17 @@ function ResolverFactory(boardService, laneService, cardService, commentService,
         return context.loaders.users.load(context.user.id);
       }
     },
-    Board: {
-      author,
-      lastEditor,
-      lanes(parent, args, { user, loaders  }, { fieldASTs }){
-        //console.log('Board.lanes', fieldASTs)
-        return loaders.lanesByBoard.load(parent.id);
-        //return laneService.getAllByBoard(user.id, parent.id);
-      },
-      members(parent, args, context){
-        return userService.getMembersForBoard(parent.id)
-          .tap(users => {
-            //cache users
-            users.forEach(user => {
-              context.loaders.users.prime(user.id, user);
-            });
-          });
-      }
-    },
-    BoardMember: {
-      user(parent, args, { loaders, user }){
-        return loaders.users.load(parent.id);
-      },
-      board(parent, args, { loaders }){
-        return loaders.boards.load(parent.boardId);
-      }
-    },
-    Lane: {
-      author,
-      lastEditor,
-      cards (parent, args, { loaders, user }, { fieldASTs }){
-        //console.log('Resolving cards for lane', fieldASTs);
-        return loaders.cardsByLane.load(parent.id);
-        //return cardService.getByLane(context.user.id, parent.id);
-      }
-    },
-    Card: {
-      author,
-      lastEditor,
-      comments(parent, args, { loaders, user }){
-        return loaders.commentsByCard.load({ id: parent.id, limit: 100 });
-      },
-    },
+    Board: board(common, userService),
+    BoardMember: boardMember(common),
+    Lane: lane(common),
+    Card: card(common),
     Comment: {
-      author,
-      lastEditor
+      author: common.author,
+      lastEditor: common.lastEditor,
+      deleted: common.deleted
+    },
+    User: {
+      deleted: common.deleted
     }
   };
 }

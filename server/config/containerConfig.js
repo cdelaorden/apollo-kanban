@@ -2,8 +2,7 @@ var kontainer = require('kontainer-di'),
     httpConfig = require('./http'),
     knexfile = require('./knexfile');
 
-
-
+//config & knex
 kontainer.register('httpConfig', [], httpConfig);
 kontainer.register('dbConfig', [], knexfile);
 kontainer.register('db', ['dbConfig'], require('../services/db'));
@@ -17,6 +16,7 @@ kontainer.register('card', ['db'], require('../services/card'));
 kontainer.register('comment', ['db'], require('../services/comment'));
 
 //GQL stuff
+kontainer.register('types', [], require('../schema/types'));
 kontainer.register('resolvers', [
     'board',
     'lane',
@@ -30,8 +30,8 @@ kontainer.register('loaders', [
     'card',
     'comment',
     'user'
-], require('../modules/gql-server/loaders'));
-kontainer.register('schema', ['resolvers'], require('../schema/index'));
+], require('../schema/loaders'));
+kontainer.register('schema', ['types', 'resolvers'], require('../schema/index'));
 
 //modules
 kontainer.register('webserver', ['httpConfig'], require('../modules/webserver'));
