@@ -1,11 +1,12 @@
 var { apolloExpress, graphiqlExpress } = require('apollo-server');
 var bodyParser = require('body-parser');
 
-
 function GraphQLServerFactory(schema, loaders, webserver){
 
-  //TODO: validate & extract JSON web token for authentication
+  //TODO: validate & extract JSON web token for authentication and hydrate req.user!!!
+  //**********************************************************************************
   webserver.app.use('/graphql', bodyParser.json(), apolloExpress(req => {
+
     req.user || (req.user = { id: 1, username: 'admin' });
     var context = {
       user: req.user,
