@@ -2,7 +2,7 @@ var path = require('path');
 
 module.exports = {
   client: 'mysql',
-  debug: true,
+  debug: false,
   connection: {
     host: 'localhost',
     database: 'kanban',

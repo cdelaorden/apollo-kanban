@@ -2,6 +2,21 @@ var userResolver = require('./user');
 var { Kind } = require('graphql/language')
 
 function ResolverFactory(boardService, laneService, cardService, commentService, userService){
+
+  //Common stuff for relations
+
+  /** Returns a User object from an entity authorId */
+  function author(parent, args, { loaders }){
+    return loaders.users.load(parent.authorId);
+  }
+
+  /** Returns a User object from an entity's lastEditedById */
+  function lastEditor(parent, args, { loaders }){
+    return parent.lastEditorId ?
+      loaders.users.load(parent.lastEditorId) :
+      null;
+  }
+
   return {
     //Custom scalar type
     Date: {
@@ -22,6 +37,7 @@ function ResolverFactory(boardService, laneService, cardService, commentService,
     Query: {
       boards (_, args, { user, loaders }){
         //fetch all boards for current user
+        console.log('Board.getForUser', user.id);
         return boardService.getForUser(user.id)
         .tap(boards => {
           boards.forEach(board => {
@@ -39,9 +55,8 @@ function ResolverFactory(boardService, laneService, cardService, commentService,
       }
     },
     Board: {
-      owner (parent, args, context){
-        return context.loaders.users.load(parent.ownerId)
-      },
+      author,
+      lastEditor,
       lanes(parent, args, { user, loaders  }, { fieldASTs }){
         //console.log('Board.lanes', fieldASTs)
         return loaders.lanesByBoard.load(parent.id);
@@ -55,9 +70,19 @@ function ResolverFactory(boardService, laneService, cardService, commentService,
               context.loaders.users.prime(user.id, user);
             });
           });
+      }
+    },
+    BoardMember: {
+      user(parent, args, { loaders, user }){
+        return loaders.users.load(parent.id);
       },
+      board(parent, args, { loaders }){
+        return loaders.boards.load(parent.boardId);
+      }
     },
     Lane: {
+      author,
+      lastEditor,
       cards (parent, args, { loaders, user }, { fieldASTs }){
         //console.log('Resolving cards for lane', fieldASTs);
         return loaders.cardsByLane.load(parent.id);
@@ -65,17 +90,15 @@ function ResolverFactory(boardService, laneService, cardService, commentService,
       }
     },
     Card: {
-      author(parent, args, { loaders }){
-        return loaders.users.load(parent.authorId);
-      },
+      author,
+      lastEditor,
       comments(parent, args, { loaders, user }){
-        return loaders.commentsByCard.load(parent.id);
-      }
+        return loaders.commentsByCard.load({ id: parent.id, limit: 100 });
+      },
     },
     Comment: {
-      author(parent, args, { loaders }){
-        return loaders.users.load(parent.authorId);
-      }
+      author,
+      lastEditor
     }
   };
 }

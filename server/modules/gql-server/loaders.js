@@ -9,6 +9,7 @@ function LoadersFactory(BoardService, LaneService, CardService, CommentService, 
       });
     }
 
+
     function makeLanesByBoardLoader(userId){
       return new DataLoader(boardIds => {
         console.log('LanesByBoardLoader.load', boardIds);
@@ -34,12 +35,20 @@ function LoadersFactory(BoardService, LaneService, CardService, CommentService, 
     }
 
     function makeCommentsByCardLoader(userId){
-      return new DataLoader(cardIds => {
+      return new DataLoader((cardIds) => {
         console.log('CommentsByCard.load', cardIds);
-        return CommentService.getManyByCards(userId, cardIds)
+        return CommentService.getManyByCards(userId, cardIds.map(x => x.id))
         .then(comments => cardIds.map(cardId =>
-          comments.filter(comment => comment.cardId === cardId))
+          comments.filter(comment => comment.cardId === cardId.id))
         );
+      },
+      //dataloader options
+      {
+        //custom key function to extract real IDs from keys
+        cacheKeyFn: function(key){
+          console.log('CacheFnKey', key);
+          return key.id
+        }
       });
     }
 

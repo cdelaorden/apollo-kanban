@@ -41,7 +41,7 @@ function UserServiceFactory(db){
 
   function getMembersForBoard(boardId){
     return db('User')
-      .select('id', 'username')
+      .select('User.id', 'User.username', 'BoardMember.boardId', 'BoardMember.isAdmin')
       .innerJoin('BoardMember', 'BoardMember.userId', 'User.id')
       .where('BoardMember.boardId', boardId);
   }
