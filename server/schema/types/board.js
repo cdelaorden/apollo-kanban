@@ -6,6 +6,8 @@ type Board implements Entity, CreatedEntity, EditableEntity, Deletable {
   isPublic: Boolean
   author: User!
   createdAt: Date!
+  createdAtISO: String!
+  createdAtGMT: String!
   lastEditor: User
   lastEditedAt: Date
   deleted: Boolean

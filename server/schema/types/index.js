@@ -5,18 +5,20 @@ var Board = require('./board'),
     User = require('./user'),
     customTypes = require('./customTypes'),
     interfaces = require('./interfaces'),
-    Query = require('./query');
-
+    Query = require('./query'),
+    Mutation = require('./mutation');
 
 const schema = `
 schema {
   query: Query
+  mutation: Mutation
 }
 `;
 
 
 module.exports = [
   customTypes, interfaces,
-  Board, Lane, Card, Comment, User, Query,
+  Board, Lane, Card, Comment, User,
+  Query, Mutation,
   schema
 ];

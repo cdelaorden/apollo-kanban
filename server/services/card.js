@@ -59,12 +59,30 @@ function CardServiceFactory(db){
       .orderBy('laneId', 'displayOrder');
   }
 
+  function createCard(userId, { boardId, laneId, title}){
+    console.log('createCard', userId, boardId, laneId, title)
+    return db('Card').max('displayOrder as maxOrder').where({ laneId }).first()
+      .then(function({ maxOrder }){
+        console.log('maxOrder', maxOrder);
+        return db('Card')
+        .insert({
+          authorId: userId,
+          title,
+          laneId,
+          displayOrder: maxOrder + 1
+        },
+        //return the new id!
+        'id');
+      });
+  }
+
   return {
     getById,
     getManyById,
     getManyByLanes,
     getByLane,
-    getByBoard
+    getByBoard,
+    createCard
   }
 }
 

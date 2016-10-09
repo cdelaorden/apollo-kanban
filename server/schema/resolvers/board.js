@@ -1,8 +1,11 @@
-function createBoardResolver({ author, lastEditor, deleted }, userService){
+function createBoardResolver({ author, lastEditor, deleted }, dateFormats, userService){
+  const { createdAtISO, createdAtGMT } = dateFormats;
   return {
       author,
       lastEditor,
       deleted,
+      createdAtISO,
+      createdAtGMT,
       lanes(parent, args, { user, loaders  }){
         return loaders.lanesByBoard.load(parent.id);
       },

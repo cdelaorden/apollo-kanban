@@ -7,6 +7,8 @@ interface Entity {
 # Things created by user
 interface CreatedEntity {
   createdAt: Date!
+  createdAtISO: String!
+  createdAtGMT: String!
   author: User!
 }
 

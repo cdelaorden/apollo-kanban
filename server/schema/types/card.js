@@ -7,6 +7,8 @@ type Card implements Entity, CreatedEntity, EditableEntity, Deletable {
   displayOrder: Int
   author: User!
   createdAt: Date!
+  createdAtISO: String!
+  createdAtGMT: String!
   lastEditor: User
   lastEditedAt: Date
   deleted: Boolean
