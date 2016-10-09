@@ -29,7 +29,20 @@ function CommentServiceFactory(db){
       //user has access to this board
       .where('BoardMember.userId', userId)
       .whereIn('id', ids)
-      .orderBy('createdAt', 'DESC')
+      .orderBy('createdAt')
+  }
+
+  function getManyByCards(userId, cardIds = []){
+    return db('Comment')
+      .select('Comment.*')
+      .innerJoin('Card', 'Comment.cardId', 'Card.id')
+      .innerJoin('Lane', 'Card.laneId', 'Lane.id')
+      .innerJoin('Board', 'Board.id', 'Lane.boardId')
+      .innerJoin('BoardMember', 'BoardMember.boardId', 'Board.id')
+      //user has access to this board
+      .where('BoardMember.userId', userId)
+      .whereIn('Card.id', cardIds)
+      .orderBy('createdAt')
   }
 
   /** Returns the N most recents comments on a board */
@@ -50,6 +63,7 @@ function CommentServiceFactory(db){
   return {
     getByCard,
     getManyById,
+    getManyByCards,
     getRecentByBoard
   }
 }

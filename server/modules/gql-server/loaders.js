@@ -4,26 +4,57 @@ function LoadersFactory(BoardService, LaneService, CardService, CommentService, 
 
     function makeBoardLoader(userId){
       return new DataLoader(ids => {
+        console.log('BoardLoader.load', ids);
         return BoardService.getManyById(userId, ids);
       });
     }
 
-    function makeLaneLoader(userId){
-      return new DataLoader(ids => {
-        return LaneService.getManyById(userId, ids);
+    function makeLanesByBoardLoader(userId){
+      return new DataLoader(boardIds => {
+        console.log('LanesByBoardLoader.load', boardIds);
+        return LaneService.getAllByBoard(userId, boardIds)
+        .then(lanes => {
+          return boardIds.map(boardId => {
+            return lanes.filter(lane => lane.boardId === boardId);
+          });
+        });
       });
     }
 
-    function makeCardLoader(userId){
-      return new DataLoader(ids => CardService.getManyById(userId, ids));
+    function makeCardsByLaneLoader(userId){
+      return new DataLoader(laneIds => {
+        console.log('CardsByLane.load', laneIds);
+        return CardService.getManyByLanes(userId, laneIds)
+        .then(cards => {
+          return laneIds.map(laneId => {
+          return cards.filter(card => card.laneId === laneId);
+          });
+        })
+      });
     }
 
-    function makeCommentLoader(userId){
-      return new DataLoader(ids => CommentService.getManyById(userId, ids));
+    function makeCommentsByCardLoader(userId){
+      return new DataLoader(cardIds => {
+        console.log('CommentsByCard.load', cardIds);
+        return CommentService.getManyByCards(userId, cardIds)
+        .then(comments => cardIds.map(cardId =>
+          comments.filter(comment => comment.cardId === cardId))
+        );
+      });
     }
 
     function makeUserLoader(){
-      return new DataLoader(ids => UserService.getManyById(ids));
+      return new DataLoader(ids => {
+        console.log('UserLoader.load', ids);
+        return UserService.getManyById(ids)
+      });
+    }
+
+    function makeAuthorsByComment(){
+      return new DataLoader(commentIds => {
+        console.log('AuthorsByComment.load', commentIds);
+        return UserService.getManyByComments(commentIds)
+      });
     }
 
     return {
@@ -31,10 +62,11 @@ function LoadersFactory(BoardService, LaneService, CardService, CommentService, 
         var userId = user.id || 1;
         return {
           boards: makeBoardLoader(userId),
-          lanes: makeLaneLoader(userId),
-          cards: makeCardLoader(userId),
-          comments: makeCommentLoader(userId),
-          users: makeUserLoader()
+          lanesByBoard: makeLanesByBoardLoader(userId),
+          cardsByLane: makeCardsByLaneLoader(userId),
+          commentsByCard: makeCommentsByCardLoader(userId),
+          authorsByComment: makeAuthorsByComment(),
+          users: makeUserLoader(),
         }
       }
     }

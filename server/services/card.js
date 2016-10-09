@@ -31,6 +31,17 @@ function CardServiceFactory(db){
       .orderBy('displayOrder');
   }
 
+  function getManyByLanes(userId, laneIds = []){
+    return db('Card')
+      .select('Card.*')
+      .innerJoin('Lane', 'Card.laneId', 'Lane.id')
+      .innerJoin('Board', 'Lane.boardId', 'Board.id')
+      .innerJoin('BoardMember', 'BoardMember.boardId', 'Board.id')
+      .where('BoardMember.userId', userId)
+      .whereIn('Card.laneId', laneIds)
+      .orderBy('displayOrder');
+  }
+
   /** Returns all cards in a board, sorted by laneId and displayOrder */
   function getByBoard(userId, boardId){
     return db('Card')
@@ -46,6 +57,7 @@ function CardServiceFactory(db){
   return {
     getById,
     getManyById,
+    getManyByLanes,
     getByLane,
     getByBoard
   }

@@ -17,13 +17,13 @@ function LaneServiceFactory(db){
    * Returns all lanes in a boardId
    * @param {Number}  boardId Board identifier
    * */
-  function getAllByBoard(userId, boardId){
+  function getAllByBoard(userId, boardIds = []){
     return db('Lane')
       .select('Lane.*')
       .innerJoin('Board', 'Lane.boardId', 'Board.id')
       .innerJoin('BoardMember', 'BoardMember.boardId', 'Board.id')
       .where('BoardMember.userId', userId)
-      .where('Lane.boardId', boardId);
+      .whereIn('Lane.boardId', boardIds);
   }
 
   function getManyById(userId, ids){

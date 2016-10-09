@@ -46,6 +46,13 @@ function UserServiceFactory(db){
       .where('BoardMember.boardId', boardId);
   }
 
+  function getManyByComments(commentIds = []){
+    return db('User')
+      .select('User.id', 'User.username')
+      .innerJoin('Comment', 'Comment.authorId', 'User.id')
+      .whereIn('Comment.id', commentIds);
+  }
+
   function create(newUser){
     return checkUsername(newUser.username)
     .then(ok => encryptPassword(newUser.password))
@@ -83,6 +90,7 @@ function UserServiceFactory(db){
     getManyById,
     getByUsername,
     getMembersForBoard,
+    getManyByComments,
     login,
     create,
     checkUsername

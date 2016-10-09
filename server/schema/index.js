@@ -1,9 +1,13 @@
-var { makeExecutableSchema } = require('graphql-tools');
+var { makeExecutableSchema, addErrorLoggingToSchema } = require('graphql-tools');
 var types = require('./types');
 
 module.exports = function(resolvers){
-  return makeExecutableSchema({
+  const logger = { log: (e) => console.error(e) }
+  let schema = makeExecutableSchema({
     typeDefs: types,
     resolvers: resolvers
   });
+
+  addErrorLoggingToSchema(schema, logger);
+  return schema;
 }
