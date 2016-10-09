@@ -5,6 +5,11 @@ function CardServiceFactory(db){
   function getById(userId, id){
     return db('Card')
       .select('Card.*')
+      //user has access to the board this card appears on
+      .innerJoin('Lane', 'Card.laneId', 'Lane.id')
+      .innerJoin('Board', 'Lane.boardId', 'Board.id')
+      .innerJoin('BoardMember', 'BoardMember.boardId', 'Board.id')
+      .where('BoardMember.userId', userId)
       .where({ id })
       .first();
   }
@@ -16,7 +21,7 @@ function CardServiceFactory(db){
       .innerJoin('Board', 'Lane.boardId', 'Board.id')
       .innerJoin('BoardMember', 'BoardMember.boardId', 'Board.id')
       .where('BoardMember.userId', userId)
-      .whereIn('id', ids);
+      .whereIn('Card.id', ids);
   }
 
   /** Returns all cards in a given lane */

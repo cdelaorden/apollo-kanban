@@ -1,9 +1,12 @@
+var { Kind } = require('graphql/language');
+
 module.exports = {
   __parseValue(value) {
     return new Date(value); // value from the client
   },
   __serialize(value) {
-    return value.getTime(); // value sent to the client
+    //return value.getTime(); // value sent to the client
+    return value.toISOString();
   },
   __parseLiteral(ast) {
     if (ast.kind === Kind.INT) {
