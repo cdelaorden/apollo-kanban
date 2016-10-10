@@ -7,12 +7,14 @@ var kontainer = require('./config/containerConfig');
 kontainer.get('gqlserver');
 kontainer.start('webserver');
 
+createAdminAccountIfNeeded();
+
 /**
  * FOR DEVELOPMENT PURPOSES...
  * Call this function on this file to create an admin:admin user for testing
  */
 function createAdminAccountIfNeeded(){
-  var userService = kontainer.get('userService');
+  var userService = kontainer.get('user');
   //create dummy admin:admin account if one does not exists
   userService.getByUsername('admin')
   .then(user => {
@@ -21,7 +23,7 @@ function createAdminAccountIfNeeded(){
         username: 'admin',
         password: 'admin',
         createdAt: new Date(),
-        active: true
+        deleted: false
       }).then(u => u);
     }
     return user

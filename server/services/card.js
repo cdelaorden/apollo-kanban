@@ -43,7 +43,7 @@ function CardServiceFactory(db){
       .innerJoin('Board', 'Lane.boardId', 'Board.id')
       .innerJoin('BoardMember', 'BoardMember.boardId', 'Board.id')
       .where('BoardMember.userId', userId)
-      .whereIn('Card.laneId', laneIds)
+      .whereIn('Card.laneId', laneIds)      
       .orderBy('displayOrder');
   }
 
@@ -76,13 +76,38 @@ function CardServiceFactory(db){
       });
   }
 
+  function updateCard(userId, cardData){
+    const { id, title, description, displayOrder } = cardData;
+    //PENDING: validate!
+    return db('Card')
+      .update({        
+        title, 
+        description,
+        displayOrder
+      })
+      .where({ id });
+  }
+
+  function removeCard(userId, id){
+    //TODO - has the user access to this board?
+    return db('Card')
+      .update({
+        deleted: true,
+        lastEditorId: userId,
+        lastEditedAt: new Date()
+      })
+      .where({ id });
+  }
+
   return {
     getById,
     getManyById,
     getManyByLanes,
     getByLane,
     getByBoard,
-    createCard
+    createCard,
+    updateCard,
+    removeCard
   }
 }
 

@@ -35,11 +35,35 @@ function BoardServiceFactory(db){
       .where('Board.name', 'LIKE', `%${name}%`);
   }
 
+  /** Creates a new Board and BoardMember row for current user
+   * and returns a Promise that resolves with new Board id */
+  function createBoard(userId, name){
+    return db('Board')
+      .insert({
+        name,        
+        authorId: userId,        
+      }, 'id')
+      .then(([ boardId ]) => {
+        console.log('Board created', boardId);
+        return db('BoardMember')
+        .insert({
+          userId,
+          boardId,
+          isAdmin: true
+        })
+        .then(affRows => {
+          console.log('Ok!', affRows, boardId);
+          return boardId;
+        });
+      })
+  }
+
   return {
     getById,
     getManyById,
     getForUser,
-    search
+    search,
+    createBoard
   }
 }
 

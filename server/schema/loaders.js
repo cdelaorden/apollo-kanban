@@ -24,6 +24,12 @@ function LoadersFactory(BoardService, LaneService, CardService, CommentService, 
       });
     }
 
+    function makeLaneLoader(userId){
+      return new DataLoader(ids => {
+        return LaneService.getManyById(userId, ids);
+      });
+    }
+
     function makeCardsByLaneLoader(userId){
       return new DataLoader(laneIds => {
         console.log('CardsByLane.load', laneIds);
@@ -89,6 +95,7 @@ function LoadersFactory(BoardService, LaneService, CardService, CommentService, 
         var userId = user.id || 1;
         return {
           boards: makeBoardLoader(userId),
+          lanes: makeLaneLoader(userId),
           lanesByBoard: makeLanesByBoardLoader(userId),
           cardsByLane: makeCardsByLaneLoader(userId),
           cardLoader: makeCardLoader(userId),

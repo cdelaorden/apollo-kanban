@@ -9,9 +9,18 @@ input AddCardInput {
   # Card title
   title: String!
 }
-input UpdateCardInput {
+
+input AddLaneInput {
+  boardId: Int!
   title: String!
   displayOrder: Int!
+}
+
+input UpdateCardInput {
+  id: Int!
+  title: String
+  displayOrder: Int
+  description: String
 }
 
 input AddCommentInput {
@@ -25,13 +34,13 @@ input UpdateCommentInput {
 }
 
 type Mutation {
-  # createBoard(name:String!): Board
-  # closeBoard(id:Int!): Boolean
-  # createLane(boardId: Int!, title:String!, displayOrder:Int): Lane
-  # removeLane(boardId: Int!, id: Int!): Boolean
+  createBoard(name:String!): Board
+  createLane(input: AddLaneInput): Lane
   addCard(input: AddCardInput): Card
-  # updateCard(card: UpdateCardInput): Card
-  # removeCard(id:Int!): Boolean
+  updateCard(input: UpdateCardInput): Card
+  removeCard(id:Int!): Boolean
+  # closeBoard(id:Int!): Boolean  
+  # removeLane(boardId: Int!, id: Int!): Boolean  
   # addCommentToCard(input: AddCommentInput): Comment
   # updateComment(input: UpdateCommentInput): Comment
   # removeComment(id: Int!): Boolean

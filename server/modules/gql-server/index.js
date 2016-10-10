@@ -7,7 +7,7 @@ function GraphQLServerFactory(schema, loaders, webserver){
   //**********************************************************************************
   webserver.app.use('/graphql', bodyParser.json(), apolloExpress(req => {
     console.log('GraphQL request\n\n');
-    req.user || (req.user = { id: 1, username: 'admin' });
+    req.user || (req.user = { id: 2, username: 'admin' });
     var context = {
       user: req.user,
       loaders: loaders.createLoaders(req.user)

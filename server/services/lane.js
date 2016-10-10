@@ -32,14 +32,25 @@ function LaneServiceFactory(db){
       .innerJoin('Board', 'Lane.boardId', 'Board.id')
       .innerJoin('BoardMember', 'BoardMember.boardId', 'Board.id')
       .where('BoardMember.userId', userId)
-      .whereIn('id', ids);
+      .whereIn('Lane.id', ids);
+  }
+
+  function createLane(userId, boardId, displayOrder, title){
+    return db('Lane')
+      .insert({
+        authorId: userId,
+        title,
+        displayOrder,
+        boardId
+      }, 'id');
   }
 
 
   return {
     getById,
     getManyById,
-    getAllByBoard
+    getAllByBoard,
+    createLane
   }
 }
 
