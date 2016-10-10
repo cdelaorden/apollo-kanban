@@ -1,18 +1,19 @@
 module.exports = function (boardService, laneService, cardService, commentService, userService){
   return {
-    //add board
+    /* BOARDS */
     createBoard(_, { name }, { user, loaders }){
       return boardService.createBoard(user.id, name)
         .then(boardId => loaders.boards.load(boardId));
     },
 
-    //add lane
+    /* LANES */
     createLane(_, { input }, { user, loaders }){
       const { boardId, title, displayOrder } = input;
       return laneService.createLane(user.id, boardId, displayOrder, title)
         .then(([ id ]) => loaders.lanes.load(id));
     },
 
+    /* CARDS */
     //adds a new card to a given board
     addCard(_, { input }, { user, loaders }){      
       return cardService.createCard(user.id, input)
@@ -42,7 +43,13 @@ module.exports = function (boardService, laneService, cardService, commentServic
         console.error('removeCard error', err);
         return false;
       })
-    }
+    },
+
+    /* COMMENTS */
+
+    
+
+
 
   }
 }
